@@ -136,6 +136,26 @@ h3{font-size:20px}
 .cs-col{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cs-col .aval-big em{font-style:normal;font-size:15px;color:var(--dust);font-weight:600}
 .cs-col.vazio{justify-content:center}
+.sheet-wrap{z-index:50}
+#ovl .fo{position:fixed;inset:0;z-index:42;background:var(--rock);display:flex;flex-direction:column;gap:12px;padding:calc(14px + env(safe-area-inset-top,0px)) max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));overflow:auto;box-sizing:border-box;max-width:640px;margin:0 auto}
+.fo-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.fo-top b{display:block;font-size:17px}
+.fo-desc{display:flex;flex-direction:column;align-items:center;gap:4px;background:var(--chalk);color:#fff;border-radius:20px;padding:16px}
+.fo-desc .eyebrow{color:rgba(255,255,255,.65)}.fo-desc b{font-size:52px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1}.fo-desc small{color:rgba(255,255,255,.75)}
+.fo-desc .btn.ghost{color:#fff;border-color:rgba(255,255,255,.35);background:transparent}.fo-desc .btn.primary{background:#fff;color:var(--chalk)}
+.fo-main{display:flex;flex-direction:column;gap:12px;flex:1}
+.fo-ex{display:grid;grid-template-columns:96px minmax(0,1fr);gap:14px;align-items:center}
+.fo-th{width:96px;height:96px}.fo-th canvas{width:96px;height:96px}
+.fo-nome{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin:2px 0}
+.fo-in{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.fo-in label{display:flex;align-items:baseline;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px 14px;box-shadow:var(--shadow)}
+.fo-in input{width:100%;min-width:0;border:0;background:transparent;font-size:34px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;outline:none;padding:4px 0;color:var(--chalk)}
+.fo-in span{color:var(--dust);font-weight:600}
+.fo-ok{min-height:64px;font-size:19px;border-radius:18px}
+.fo-feito{text-align:center;font-weight:800;color:var(--moss);padding:14px;background:var(--moss-soft);border-radius:16px}
+.fo-sets{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.fo-links{display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+.fo-nav{display:grid;grid-template-columns:1fr 1fr;gap:10px}.fo-nav .btn{min-height:52px}
+.linha.backup{border-color:var(--ember)}
 .lemb-b{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--chalk);color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 30px -18px rgba(13,27,51,.8)}
 .lemb-b b{display:block;font-size:14px}.lemb-b small{color:rgba(255,255,255,.72);font-size:12.5px}
 .lemb-b .btn.ghost{color:#fff;border-color:rgba(255,255,255,.35);background:transparent}.lemb-b .btn.primary{background:#fff;color:var(--chalk)}
@@ -1485,14 +1505,14 @@ function vTreinos(){
   else { const hi=hojeInfo(), f=hi.tipo==="treino"?hi.f:null, dw=DOWL[new Date().getDay()];
     if(hi.tipo==="feito") h+=`<div class="hoje"><span class="eyebrow">Hoje · ${dw}</span><b class="hoje-t">Treino feito ✓</b><span class="presc">${esc(hi.f.nome)} concluído.${hi.prox?` Próximo: ${esc(hi.prox.f.nome)} ${quandoProx(hi.prox)}.`:""}</span><button class="btn primary block big" data-nav="historico">Ver evolução</button></div>`;
     else if(hi.tipo==="descanso") h+=`<div class="hoje"><span class="eyebrow">Hoje · ${dw}</span><b class="hoje-t">Dia de descanso</b><span class="presc">${hi.prox?`Próximo: ${esc(hi.prox.f.nome)} ${quandoProx(hi.prox)}. `:""}Recupere, coma bem e durma bem.</span>${hi.prox?`<button class="btn primary block big" data-act="abrir" data-id="${esc(hi.prox.f.id)}">Adiantar o ${esc(hi.prox.f.nome)}</button>`:""}</div>`;
-    else if(f) h+=`<div class="hoje"><span class="eyebrow">Treino de hoje${hi.dia!=null?" · "+dw:""}</span><b class="hoje-t">${esc(f.nome)}</b><span class="presc">${esc(f.foco||"")} · ${(f.exercicios||[]).length} exercícios · cerca de ${duracao(f)} min</span><button class="btn primary block big" data-act="abrir" data-id="${esc(f.id)}">Começar</button></div>`;
+    else if(f) h+=`<div class="hoje"><span class="eyebrow">Treino de hoje${hi.dia!=null?" · "+dw:""}</span><b class="hoje-t">${esc(f.nome)}</b><span class="presc">${esc(f.foco||"")} · ${(f.exercicios||[]).length} exercícios · cerca de ${duracao(f)} min</span><button class="btn primary block big" data-act="focoAbrir" data-id="${esc(f.id)}">Começar</button></div>`;
     else h+=`<div class="hoje"><span class="eyebrow">Comece por aqui</span><b class="hoje-t">Monte seu plano</b><span class="presc">Fichas feitas pelo seu perfil: objetivo, nível e dias por semana.</span><button class="btn primary block big" data-act="plano">Montar meu plano</button></div>`; }
   h+=meuTreinoHTML();
   { const of=planoOficial(); if(of && CAT_PRONTO.includes(of.fs[0].nivel)){ const nv=nivelPadrao();
     h+=`<div class="panel">${nivelSeg(null)}<span class="presc">${esc(TXT_NIVEL[nv])}</span>${cicloLinhaHome()}</div>`; }
     else if(planoBase().some(f=>f.perso)){ const nv=S.intensPlano||"Moderada"; h+=`<div class="panel">${intensSeg(null)}<span class="presc">${esc(TXT_INT[nv])}</span>${persoResumo()}${cicloLinhaHome()}</div>`; }
     else if(p) h+=cicloLinhaHome(); }
-  h+=semanaHTML();
+  h+=semanaHTML()+backupHTML();
   h+=`<button class="link" data-act="explorar" style="align-self:center">Outros treinos e ferramentas</button>`;
   return h;
 }
@@ -2265,6 +2285,53 @@ setInterval(lembTick,60e3); document.addEventListener("visibilitychange",()=>set
 function lembBanner(){ const x=S.lembAtivo; if(!x) return "";
   return `<div class="lemb-b" role="status"><div style="min-width:0"><b>${esc(x.t)}</b><small>${esc(x.d)}</small></div><div class="row" style="flex-wrap:nowrap">${x.tipo==="agua"?`<button class="btn sm primary" data-act="lembAgua" data-v="${x.ml}">Bebi</button>`:""}<button class="btn sm ghost" data-act="lembOk">OK</button></div></div>`; }
 
+/* ---------- Modo treino em tela cheia (um exercício por vez) ---------- */
+function focoPrimeiro(f){ const a=S.atual&&S.atual.fichaId===f.id?S.atual:null; const i=(f.exercicios||[]).findIndex((ex,k)=>{ const n=Math.max(1,+ex.series||1), s=a&&a.sets[String(k)]||[]; return s.filter(x=>x.f).length<n; }); return i<0?Math.max(0,(f.exercicios||[]).length-1):i; }
+function focoHTML(){
+  const f=fichaById(S.fichaId); if(!f){ S.foco=null; return ""; }
+  const exs=f.exercicios||[], i=Math.min(S.foco.i,exs.length-1), ex=exs[i]; if(!ex) return "";
+  const n=Math.max(1,+ex.series||1), a=S.atual&&S.atual.fichaId===f.id?S.atual:null, outro=S.atual&&S.atual.fichaId!==f.id;
+  const sets=a?(a.sets[String(i)]||[]):[], feitos=sets.filter(x=>x.f).length, j=Math.min(n-1,feitos), cur=sets[j]||{c:"",r:""}, completo=feitos>=n;
+  const p=progresso(f), nivel=f.perso?intensDe(f):CAT_PRONTO.includes(f.nivel)?nivelDe(f):null, sug=cargaSugerida(ex.nome,n,ex.reps,nivel), fx=parseFaixa(ex.reps), m=S._ciclo&&metaCiclo(ex.nome);
+  const tudo=p.total&&p.feitos>=p.total, rodando=TIMER.end>Date.now() && !$("#timer").hidden, prox=exs[i+1];
+  const rest=Math.max(0,Math.ceil((TIMER.end-Date.now())/1000));
+  let h=`<div class="fo" role="dialog" aria-label="Modo treino"><div class="fo-top"><div style="min-width:0"><span class="eyebrow">${esc(f.nome)}</span><b>${p.feitos} de ${p.total} séries</b></div><button class="btn sm ghost" data-act="focoSair">Sair</button></div>
+    <div class="prog"><i style="width:${p.total?p.feitos/p.total*100:0}%"></i></div>`;
+  if(outro) return h+`<div class="fo-main"><p class="note">Você tem outro treino aberto (${esc(S.atual.fichaNome)}). Conclua ou descarte ele primeiro.</p><button class="btn primary block big" data-act="focoSair">Voltar</button></div></div>`;
+  if(rodando) h+=`<div class="fo-desc"><span class="eyebrow">Descanso</span><b id="fo-t">${Math.floor(rest/60)}:${String(rest%60).padStart(2,"0")}</b><small>${completo&&prox?`Próximo: ${esc(prox.nome)}`:`Depois: série ${j+1} de ${esc(ex.nome)}`}</small><div class="row" style="justify-content:center"><button class="btn sm ghost" data-act="tMenos">−15s</button><button class="btn sm ghost" data-act="tMais">+15s</button><button class="btn sm primary" data-act="focoPular">Pular</button></div></div>`;
+  h+=`<div class="fo-main"><div class="fo-ex"><button class="thumb fo-th" data-act="anim" data-i="${i}" aria-label="Ver execução"><canvas data-thumb="${i}"></canvas><span class="play" aria-hidden="true">▶</span></button>
+      <div style="min-width:0"><small class="presc">Exercício ${i+1} de ${exs.length}</small><b class="fo-nome">${esc(ex.nome)}</b><span class="presc">${n} × ${esc(ex.reps||"")}${ex.descanso?` · descanso ${esc(ex.descanso)}`:""}</span></div></div>
+    ${ex.obs?`<div class="obs">${esc(ex.obs)}</div>`:""}
+    ${sug?`<div class="sug${sug.sobe?" up":""}"><span><b>${sugRotulo(sug)} ${fmtKg(sug.kg)} kg${sug.un||""}</b>${m?(m.ok?" · meta do ciclo batida ✓":` · meta do ciclo ${fmtKg(m.alvo)} kg`):""}</span></div>`:""}`;
+  if(!completo) h+=`<span class="eyebrow" style="text-align:center">Série ${j+1} de ${n}</span>
+    <div class="fo-in"><label><input id="fo-c" inputmode="decimal" placeholder="${(sets.slice(0,j).reverse().find(x=>x.f&&x.c)||{}).c||(sug?fmtKg(sug.kg):"0")}" value="${esc(cur.c||"")}" data-act="carga" data-i="${i}" data-j="${j}" aria-label="Carga"><span>kg</span></label><label><input id="fo-r" inputmode="numeric" placeholder="${fx?(fx[0]===fx[1]?fx[0]:fx[0]+"-"+fx[1]):"reps"}" value="${esc(cur.r||"")}" data-act="reps" data-i="${i}" data-j="${j}" aria-label="Repetições"><span>reps</span></label></div>
+    <button class="btn primary block fo-ok" data-act="focoChk" data-i="${i}" data-j="${j}">✓ Série ${j+1} feita</button>`;
+  else h+=`<div class="fo-feito">✓ ${esc(ex.nome)} concluído</div>`;
+  if(sets.some(x=>x.f)) h+=`<div class="fo-sets">${sets.map((x,k)=>x.f?`<button class="chip" data-act="focoDesfaz" data-i="${i}" data-j="${k}" title="Desfazer">${k+1}ª · ${esc(x.c||"–")} kg${x.r?` × ${esc(x.r)}`:""} ✓</button>`:"").join("")}</div>`;
+  h+=`<div class="fo-links"><button class="link" data-act="focoOcupado" data-i="${i}">Aparelho ocupado</button>${usaAnilha(ex.nome)?`<button class="link" data-act="anilhas" data-i="${i}">Anilhas</button>`:""}<button class="link" data-act="anim" data-i="${i}">Ver execução</button></div></div>`;
+  h+= tudo ? `<button class="btn primary block big" data-act="focoConcluir">${S.confirm==="concluir"?"Confirmar: concluir treino":"Concluir treino"}</button>`
+    : `<div class="fo-nav"><button class="btn ghost" data-act="focoIr" data-k="${i-1}" ${i===0?"disabled":""}>← Anterior</button><button class="btn ${completo?"primary":"ghost"}" data-act="focoIr" data-k="${i+1}" ${i>=exs.length-1?"disabled":""}>${prox?`Próximo →`:"Fim"}</button></div>
+       ${p.feitos?`<button class="link" data-act="focoConcluir" style="align-self:center">${S.confirm==="concluir"?`Concluir com ${p.feitos} de ${p.total} séries?`:"Terminar agora"}</button>`:""}`;
+  return h+`</div>`;
+}
+let foIv=0;
+function focoTick(){ const el=document.getElementById("fo-t"); if(!S.foco){ clearInterval(foIv); foIv=0; return; } const rest=Math.max(0,Math.ceil((TIMER.end-Date.now())/1000)); if(el) el.textContent=`${Math.floor(rest/60)}:${String(rest%60).padStart(2,"0")}`; if(el && rest<=0){ render(); } }
+
+/* ---------- Backup semanal (salvo em Arquivos/iCloud pelo menu de compartilhar) ---------- */
+async function salvarBackup(){
+  const nome="backup-familyflow-"+(String((S.perfil&&S.perfil.nome)||"").trim().split(" ")[0]||"app").toLowerCase()+"-"+new Date().toISOString().slice(0,10)+".json";
+  const txt=backupJSON(), file=new File([txt],nome,{type:"application/json"});
+  try{ if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:"Backup FamilyFlow"}); LS.set("brabus.ultBackup",new Date().toISOString()); toast("Backup salvo"); return true; } }
+  catch(e){ if(e && e.name==="AbortError") return false; }
+  try{ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"})); a.download=nome; document.body.appendChild(a); a.click(); a.remove(); LS.set("brabus.ultBackup",new Date().toISOString()); toast("Backup salvo em Downloads"); return true; }catch(e){ toast("Não foi possível salvar o backup"); return false; }
+}
+function backupHTML(){
+  if(!S.perfil || !S.sessoes.length) return "";
+  const u=LS.get("brabus.ultBackup",null), adiado=LS.get("brabus.backupAdiado",null), dias=u?Math.floor((Date.now()-Date.parse(u))/DIA):null;
+  if(dias!=null && dias<7) return ""; if(adiado && Date.now()-Date.parse(adiado)<2*DIA) return "";
+  return `<div class="linha backup"><span><b>${u?`Último backup há ${dias} dias`:"Faça seu primeiro backup"}</b><small>Salve em Arquivos → iCloud Drive para não perder o histórico</small></span><div class="row" style="flex-wrap:nowrap"><button class="btn sm primary" data-act="backupSalvar">Salvar</button><button class="link" data-act="backupAdiar" aria-label="Lembrar depois">Depois</button></div></div>`;
+}
+
 /* ---------- Fotos de progresso (ficam só neste aparelho, IndexedDB) ---------- */
 const POSES=[["frente","Frente"],["lado","Lado"],["costas","Costas"]];
 const FOTODB={
@@ -2534,7 +2601,8 @@ function vFicha(){
     h += o&&o.ids.includes(f.id) ? `<div class="linha"><span><b>Seu treino oficial ✓</b><small>${esc(o.nome)} nos seus dias de treino</small></span><button class="link" data-act="oficialSair">Deixar de usar</button></div>` : `<button class="btn ghost block" data-act="oficial">Usar ${esc(nomeGrupo(f))} como meu treino oficial</button>`; }
   if(f.orientacao) h += `<p class="obs" style="margin:0">${esc(f.orientacao)}</p>`;
   if(outro) h += `<div class="banner"><div style="min-width:0"><span class="eyebrow">Você já tem um treino aberto</span><div style="font-weight:700">${esc(S.atual.fichaNome)}</div></div><div class="row"><button class="btn sm ghost" data-act="abrir" data-id="${esc(S.atual.fichaId)}">Continuar</button><button class="btn sm primary" data-act="descartar">${S.confirm==="descartar"?"Confirmar descarte":"Descartar e começar este"}</button></div></div>`;
-  else h += `<div class="stack" style="gap:6px"><div class="row" style="justify-content:space-between"><span class="eyebrow">${ativo?"Progresso":"Marque cada série ao terminar"}</span><span class="presc"><strong>${p.feitos}</strong> / ${p.total} séries</span></div><div class="prog"><i style="width:${p.total?Math.round(p.feitos/p.total*100):0}%"></i></div></div>`;
+  if(!outro) h += `<button class="btn primary block" data-act="focoAbrir" data-id="${esc(f.id)}">${ativo?"Voltar ao modo treino":"Começar no modo treino"}</button>`;
+  if(outro) {} else h += `<div class="stack" style="gap:6px"><div class="row" style="justify-content:space-between"><span class="eyebrow">${ativo?"Progresso":"Marque cada série ao terminar"}</span><span class="presc"><strong>${p.feitos}</strong> / ${p.total} séries</span></div><div class="prog"><i style="width:${p.total?Math.round(p.feitos/p.total*100):0}%"></i></div></div>`;
   (f.exercicios||[]).forEach((ex,i)=>{
     const n = Math.max(1, +ex.series||1);
     const sets = ativo ? getSets(i,n) : Array.from({length:n},()=>({c:"",r:"",f:false}));
@@ -2650,10 +2718,12 @@ function render(){
   if(S.view==="ficha" && !S.editing) ANIM.thumbs(fichaById(S.fichaId));
   if(S.view==="historico") hidrataFotos();
   let ovl=document.getElementById("ovl"); if(!ovl){ ovl=document.createElement("div"); ovl.id="ovl"; document.body.appendChild(ovl); }
-  ovl.innerHTML = S.chatOpen ? chatHTML() : S.anl ? anilhasHTML() : S.cardioForm ? cardioHTML() : "";
+  if(S.view!=="ficha" || S.editing) S.foco=null;
+  ovl.innerHTML = S.chatOpen ? chatHTML() : S.anl ? anilhasHTML() : S.cardioForm ? cardioHTML() : S.foco ? focoHTML() : "";
+  if(S.foco && !S.chatOpen && !S.anl && !S.cardioForm){ ANIM.thumbs(fichaById(S.fichaId)); if(!foIv) foIv=setInterval(focoTick,500); }
   if(S.chatOpen){ const cl=document.getElementById("cm-lista"); if(cl) cl.scrollTop=cl.scrollHeight; }
   let fab=document.getElementById("iaBtn"); if(!fab){ fab=document.createElement("button"); fab.id="iaBtn"; fab.className="ia-fab"; fab.dataset.act="chatAbrir"; fab.setAttribute("aria-label","Abrir assistente"); fab.innerHTML="<span>IA</span>"; document.body.appendChild(fab); }
-  fab.hidden = !S.perfil || S.chatOpen || !!S.anl || !!S.cardioForm || (S.onb && S.onb!=="done");
+  fab.hidden = !S.perfil || S.chatOpen || !!S.foco || !!S.anl || !!S.cardioForm || (S.onb && S.onb!=="done");
   fab.classList.toggle("alto", !!$("#cta").innerHTML.trim());
   syncWake();
   const ma=$("#m-aluno"), mp=$("#m-prof"); if(ma){ ma.setAttribute("aria-pressed",String(!S.owner)); mp.setAttribute("aria-pressed",String(S.owner)); }
@@ -2689,6 +2759,23 @@ document.addEventListener("click", async ev=>{
   if(act==="nivelPronto"){
     if(S.view==="ficha" && S.atual && S.atual.fichaId===S.fichaId){ toast("Conclua ou descarte o treino em andamento para trocar o nível"); return; }
     S.nivelPronto=b.dataset.k; LS.set("brabus.nivelPronto",S.nivelPronto); render(); return; }
+  if(act==="focoAbrir"){ const id=b.dataset.id||S.fichaId; S.fichaId=id; S.editing=null; S.view="ficha";
+    if(S.atual && S.atual.fichaId!==id){ S.foco=null; render(); toast("Você tem outro treino aberto. Conclua ou descarte primeiro"); return; }
+    const f=fichaById(id); if(!f){ render(); return; } S._ciclo = planoBase().some(x=>x.id===f.id) ? cicloInfo() : null; S.foco={i:focoPrimeiro(f)}; audioPrep(); render(); window.scrollTo(0,0); return; }
+  if(act==="focoSair"){ S.foco=null; render(); return; }
+  if(act==="focoIr"){ const f=fichaById(S.fichaId); S.foco.i=Math.max(0,Math.min((f.exercicios||[]).length-1,+b.dataset.k)); render(); return; }
+  if(act==="focoPular"){ stopTimer(); render(); return; }
+  if(act==="focoDesfaz"){ const f=fichaById(S.fichaId), i=+b.dataset.i, j=+b.dataset.j; if(!S.atual||S.atual.fichaId!==f.id) return; getSets(i,Math.max(1,+f.exercicios[i].series||1))[j].f=false; saveAtual(); render(); return; }
+  if(act==="focoOcupado"){ const f=fichaById(S.fichaId), ex=f&&f.exercicios[+b.dataset.i]; if(!ex) return; S.chatOpen=true; chatEnviar(`Trocar ${ex.nome}, está ocupado`); return; }
+  if(act==="focoChk"){ const f=fichaById(S.fichaId); if(!f||!ensureAtual(f)) return; const i=+b.dataset.i, j=+b.dataset.j, ex=f.exercicios[i], sets=getSets(i,Math.max(1,+ex.series||1));
+    const ci=$("#fo-c"), ri=$("#fo-r"); if(ci&&ci.value) sets[j].c=ci.value; else if(!sets[j].c && ci && num(ci.placeholder)!=null) sets[j].c=ci.placeholder; if(ri&&ri.value) sets[j].r=ri.value;
+    sets[j].f=true; audioPrep(); const ultimaSerie=sets.every(x=>x.f), fim=ultimaSerie && f.exercicios.every((e,k)=>(S.atual.sets[String(k)]||[]).filter(x=>x.f).length>=Math.max(1,+e.series||1));
+    if(!fim) startTimer(descSeg(ex.descanso), ultimaSerie?`Descanso · próximo: ${(f.exercicios[i+1]||{}).nome||""}`:`Descanso · ${ex.nome}`);
+    const c=num(sets[j].c), pr=prAnterior(ex.nome);
+    if(c!=null && pr!=null && c>pr && !S.prsHoje[ex.nome+":"+c]){ S.prsHoje[ex.nome+":"+c]=1; toast(`Novo recorde! ${ex.nome}: ${fmtKg(c)} kg`); } else if(ultimaSerie) toast(`${ex.nome} registrado na Evolução`);
+    saveAtual(); if(ultimaSerie) S.foco.i=focoPrimeiro(f); render(); return; }
+  if(act==="focoConcluir"){ const f=fichaById(S.fichaId), p=progresso(f); if(p.feitos<p.total && prevConfirm!=="concluir"){ S.confirm="concluir"; render(); return; }
+    S.foco=null; render(); const cb=document.querySelector('#cta [data-act="concluir"]'); if(cb){ S.confirm="concluir"; cb.click(); } return; }
   if(act==="lembTog"){ const c=lembCfg(); c[b.dataset.k]=!c[b.dataset.k]; LS.set("brabus.lembretes",c); S.lembOpen=true; render(); return; }
   if(act==="lembIcs"){ try{ const blob=new Blob([icsLembretes()],{type:"text/calendar;charset=utf-8"}), a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="familyflow-lembretes.ics"; document.body.appendChild(a); a.click(); a.remove(); toast("Abra o arquivo e toque em Adicionar todos"); }catch(e){ toast("Não foi possível gerar o arquivo"); } return; }
   if(act==="lembPerm"){ try{ await Notification.requestPermission(); }catch(e){} S.lembOpen=true; render(); return; }
@@ -2771,7 +2858,8 @@ document.addEventListener("click", async ev=>{
     await S.db.doc("liberacoes/"+S.uid).set({...prev, nivel:fis.nivel, avaliacoes:[...(prev.avaliacoes||[]), fis].slice(-24), ultimaAvaliacao:fis.data});
     if(fis.peso!=null){ S.pesos=[...(S.pesos||[]), {data:fis.data, kg:fis.peso}].slice(-60); await saveDoc("pesos",{lista:S.pesos}); if(S.perfil){ S.perfil={...S.perfil, peso:String(fis.peso)}; await saveDoc("perfil",S.perfil); } }
     S.autoAval=false; S.avDraft=null; toast("Reavaliação salva"); render(); return; }
-  if(act==="backupExp"){ try{ const blob=new Blob([backupJSON()],{type:"application/json"}), a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="backup-familyflow-"+new Date().toISOString().slice(0,10)+".json"; document.body.appendChild(a); a.click(); a.remove(); toast("Backup salvo"); }catch(e){ toast("Não foi possível salvar o backup"); } return; }
+  if(act==="backupExp"||act==="backupSalvar"){ await salvarBackup(); render(); return; }
+  if(act==="backupAdiar"){ LS.set("brabus.backupAdiado",new Date().toISOString()); render(); return; }
   if(act==="onbStep"){ S.onbStep=b.dataset.s; render(); window.scrollTo(0,0); return; }
   if(act==="onbCriar"||act==="onbGoogle"){
     const d=S.onbDraft||{}; let nome=String(d.nome||"").trim(), email=String(d.email||"").trim().toLowerCase();
