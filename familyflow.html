@@ -136,6 +136,28 @@ h3{font-size:20px}
 .cs-col{display:flex;flex-direction:column;gap:6px;min-width:0}
 .cs-col .aval-big em{font-style:normal;font-size:15px;color:var(--dust);font-weight:600}
 .cs-col.vazio{justify-content:center}
+.lemb-b{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--chalk);color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 14px 30px -18px rgba(13,27,51,.8)}
+.lemb-b b{display:block;font-size:14px}.lemb-b small{color:rgba(255,255,255,.72);font-size:12.5px}
+.lemb-b .btn.ghost{color:#fff;border-color:rgba(255,255,255,.35);background:transparent}.lemb-b .btn.primary{background:#fff;color:var(--chalk)}
+.meu-treino .vol{display:grid;gap:6px}
+.vol-l{display:grid;grid-template-columns:minmax(0,1fr) 90px 36px;gap:8px;align-items:center;font-size:13px}
+.vol-l .mini-prog{width:auto}.vol-l small{color:var(--dust);text-align:right}
+.ia-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:7;width:54px;height:54px;border-radius:50%;border:0;background:var(--chalk);color:#fff;font-weight:800;font-size:15px;letter-spacing:.02em;box-shadow:0 12px 26px -10px rgba(13,27,51,.7);display:grid;place-items:center}
+.ia-fab span{background:linear-gradient(135deg,#fff,#9fb7ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ia-fab.alto{bottom:calc(146px + env(safe-area-inset-bottom,0px))}
+.ia-fab[hidden]{display:none}
+#ovl .ov.chat{height:88vh;max-height:88vh;gap:10px}
+.ia-tag{font-size:11px;font-weight:800;background:var(--chalk);color:#fff;border-radius:99px;padding:2px 7px;vertical-align:middle;margin-left:4px}
+.cm-lista{flex:1;overflow:auto;display:flex;flex-direction:column;gap:10px;padding:4px 2px}
+.cm{display:flex;flex-direction:column;gap:6px;max-width:88%}
+.cm.eu{align-self:flex-end;align-items:flex-end}
+.cm .bolha{padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.45;background:var(--rock-3);color:var(--chalk)}
+.cm.eu .bolha{background:var(--ember);color:#fff;border-bottom-right-radius:6px}
+.cm.ia .bolha{border-bottom-left-radius:6px}
+.cm-a{display:flex;flex-wrap:wrap;gap:6px}
+.cm-a .chip{color:var(--ember);border-color:var(--ember);white-space:normal;text-align:left}
+.cm-in{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.cm-in input{min-width:0}
 .ciclo-mini{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;box-sizing:border-box;text-align:left;background:var(--rock-3);border:0;border-radius:12px;padding:11px 12px}
 .ciclo-mini b{display:block;font-size:14px}.ciclo-mini small{color:var(--dust);font-size:12.5px}.ciclo-mini .go{color:var(--ember);font-size:18px}
 button.ciclo-mini:not(.panel .ciclo-mini){background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:16px;padding:14px 16px}
@@ -1044,7 +1066,7 @@ function autoAvalForm(){
     <div class="field"><label for="fis-obs">Anotações</label><textarea id="fis-obs" data-fis="obs" placeholder="Como estou me sentindo, o que quero mudar no treino">${esc(D.obs||"")}</textarea></div>
     <button class="btn primary block" data-act="autoAvalSalvar">Salvar reavaliação</button><button class="btn ghost block" data-act="autoAvalFechar">Cancelar</button></div>`;
 }
-function backupJSON(){ const o={}; try{ Object.keys(localStorage).filter(k=>k.startsWith("brabus.")).forEach(k=>o[k]=localStorage.getItem(k)); }catch(e){} return JSON.stringify({app:"treinos-brabus", v:1, criadoEm:new Date().toISOString(), dados:o}); }
+function backupJSON(){ const o={}; try{ Object.keys(localStorage).filter(k=>k.startsWith("brabus.")&&k!=="brabus.iaKey").forEach(k=>o[k]=localStorage.getItem(k)); }catch(e){} return JSON.stringify({app:"treinos-brabus", v:1, criadoEm:new Date().toISOString(), dados:o}); }
 
 /* ---------- Avaliação e análise de evolução ---------- */
 const fmt1 = n => (Math.round(n*10)/10).toString().replace(".",",");
@@ -1203,7 +1225,7 @@ function vAlunoDet(a){
 }
 
 /* ---------- Boas-vindas e criação de conta (simulada na demonstração) ---------- */
-const USER_KEYS=["brabus.sessoes","brabus.atual","brabus.perfil","brabus.dyn","brabus.aval","brabus.pesos","brabus.cupons","brabus.semana","brabus.deload","brabus.cardio","brabus.diario","brabus.medidas","brabus.parceiro","brabus.desafio","brabus.oficial","brabus.ciclos","brabus.intensPlano"];
+const USER_KEYS=["brabus.sessoes","brabus.atual","brabus.perfil","brabus.dyn","brabus.aval","brabus.pesos","brabus.cupons","brabus.semana","brabus.deload","brabus.cardio","brabus.diario","brabus.medidas","brabus.parceiro","brabus.desafio","brabus.oficial","brabus.ciclos","brabus.intensPlano","brabus.lembretes","brabus.lembVistos","brabus.chat"];
 function limparUsuario(){ try{ USER_KEYS.forEach(k=>localStorage.removeItem(k)); }catch(e){} }
 function vOnboarding(){
   const hero=`<div class="hero"><div class="hero-cap"><b class="brand-big">FamilyFlow</b><span>Treinos da família</span></div></div>`;
@@ -1465,6 +1487,7 @@ function vTreinos(){
     else if(hi.tipo==="descanso") h+=`<div class="hoje"><span class="eyebrow">Hoje · ${dw}</span><b class="hoje-t">Dia de descanso</b><span class="presc">${hi.prox?`Próximo: ${esc(hi.prox.f.nome)} ${quandoProx(hi.prox)}. `:""}Recupere, coma bem e durma bem.</span>${hi.prox?`<button class="btn primary block big" data-act="abrir" data-id="${esc(hi.prox.f.id)}">Adiantar o ${esc(hi.prox.f.nome)}</button>`:""}</div>`;
     else if(f) h+=`<div class="hoje"><span class="eyebrow">Treino de hoje${hi.dia!=null?" · "+dw:""}</span><b class="hoje-t">${esc(f.nome)}</b><span class="presc">${esc(f.foco||"")} · ${(f.exercicios||[]).length} exercícios · cerca de ${duracao(f)} min</span><button class="btn primary block big" data-act="abrir" data-id="${esc(f.id)}">Começar</button></div>`;
     else h+=`<div class="hoje"><span class="eyebrow">Comece por aqui</span><b class="hoje-t">Monte seu plano</b><span class="presc">Fichas feitas pelo seu perfil: objetivo, nível e dias por semana.</span><button class="btn primary block big" data-act="plano">Montar meu plano</button></div>`; }
+  h+=meuTreinoHTML();
   { const of=planoOficial(); if(of && CAT_PRONTO.includes(of.fs[0].nivel)){ const nv=nivelPadrao();
     h+=`<div class="panel">${nivelSeg(null)}<span class="presc">${esc(TXT_NIVEL[nv])}</span>${cicloLinhaHome()}</div>`; }
     else if(planoBase().some(f=>f.perso)){ const nv=S.intensPlano||"Moderada"; h+=`<div class="panel">${intensSeg(null)}<span class="presc">${esc(TXT_INT[nv])}</span>${persoResumo()}${cicloLinhaHome()}</div>`; }
@@ -1492,7 +1515,7 @@ function vNutricao(){
     <ul class="ref-it">${m.r.itens.map(x=>`<li>${esc(txtItem(x))}</li>`).join("")}${m.tipo==="refeicao"?`<li class="muted">Salada e legumes à vontade</li>`:""}</ul>
     ${m.tipo==="pre"&&t&&(t.pesado||t.pernas)?`<p class="note" style="margin:0;color:var(--ember)">Hoje o treino é ${t.pernas?"de pernas":"pesado"}: acrescente 1 banana.</p>`:""}${(()=>{ const ok=(diaReg().refs||[]).includes(m.i); return `<button class="btn sm ${ok?"primary":"ghost"}" data-act="refFeita" data-i="${m.i}" style="align-self:flex-start" aria-pressed="${ok}">${ok?`✓ Comi · ${Math.round(m.r.tot.P)} g de proteína`:"Marcar como feita"}</button>`; })()}</article>`;
   let h=head+`<div class="resumo-n"><div><b>${M.kcal.toLocaleString("pt-BR")}</b><small>kcal</small></div><div><b>${M.P}g</b><small>proteína</small></div><div><b>${M.C}g</b><small>carbo</small></div><div><b>${M.G}g</b><small>gordura</small></div><div><b>${String(M.agua).replace(".",",")}L</b><small>água</small></div></div>`;
-  h+=hojeNutHTML(M,pl);
+  h+=hojeNutHTML(M,pl)+lembretesHTML();
   h+=`<span class="eyebrow">${amanha?"Amanhã cedo":"Próxima refeição"}</span>`+card(pl[ix],ix);
   h+= S.nutFull ? pl.map((m,i)=>i===ix?"":card(m,i)).join("")+`<button class="btn ghost block" data-act="nutFull">Mostrar só a próxima refeição</button>` : `<button class="btn ghost block" data-act="nutFull">Ver o dia completo</button>`;
   const caf=Math.min(300,Math.max(100,Math.round(num(p.peso)*3/10)*10)), creat=num(p.peso)>=80?5:num(p.peso)>=60?4:3, temWhey=pl.some(m=>m.r.itens.some(x=>x.k==="whey"));
@@ -1984,6 +2007,264 @@ function ajustarIntens(f){
 const intensSeg=f=>`<div class="stack" style="gap:6px"><span class="eyebrow">Intensidade do treino</span><div class="seg2 evo-tabs" role="group" aria-label="Intensidade">${INTENS.map(n=>`<button data-act="intensPlano" data-k="${n}" aria-pressed="${(f?intensDe(f):(S.intensPlano||"Moderada"))===n}">${n}</button>`).join("")}</div></div>`;
 function persoResumo(){ const p=S.perfil||{}, inc=p.incomoda||[]; return `<small class="note">Montado para: ${esc(CORPO[corpoDe(p)].toLowerCase())}${inc.length?` · foco em ${esc(inc.map(x=>INCOMODA[x].toLowerCase()).join(", "))}`:""}. <button class="link" data-act="perfilEditar2">Mudar respostas</button></small>`; }
 
+/* ---------- Resumo do meu treino (página inicial) ---------- */
+const GRUPO_NOME={peito:"Peito",costas:"Costas",ombro:"Ombros",biceps:"Braços",triceps:"Braços",quad:"Quadríceps",post:"Posterior de coxa",gluteo:"Glúteos",panturrilha:"Panturrilha",core:"Abdômen"};
+function grupoEx(nome){ const it=LIB.find(x=>x[0]===nome); if(it) return it[1]; if(/adutora|abdutora|pélvica|glúteo|sumô/i.test(nome)) return "gluteo"; return GRUPO_ANIM[ANIM.keyFor({nome})]||null; }
+function volumeSemana(){
+  const ag=agendaSemana(), v={}; let tot=0;
+  Object.values(ag).forEach(id=>{ const f=id&&fichaById(id); if(!f) return; (f.exercicios||[]).forEach(e=>{ const g=GRUPO_NOME[grupoEx(e.nome)]; if(!g) return; const n=+e.series||3; v[g]=(v[g]||0)+n; tot+=n; }); });
+  return {lista:Object.entries(v).sort((a,b)=>b[1]-a[1]).map(([g,n])=>({g,n,pct:Math.round(n/Math.max(1,tot)*100)})), tot};
+}
+function efeitoTexto(){
+  const p=S.perfil||{}, vol=volumeSemana(), top=vol.lista.slice(0,2).map(x=>x.g.toLowerCase()), corpo=p.corpo, obj=p.objetivo, inc=p.incomoda||[], nv=nivelPlano();
+  const t2=top.length?top.join(" e "):"o corpo todo";
+  let t;
+  if(corpo==="curvas") t=`Glúteos e pernas mais firmes e arredondados${inc.includes("barriga")||inc.includes("cintura")?", com a cintura mais marcada pelo cardio e pelo abdômen":""}. A forma muda antes da balança: acompanhe pelas fotos e pela fita.`;
+  else if(corpo==="magro"||corpo==="saude"||obj==="emagrecimento") t=`Queima de gordura preservando o músculo. Com o cardio e a alimentação do app, dá para perder de 0,5 a 1% do peso por semana, e a cintura costuma diminuir primeiro.`;
+  else if(corpo==="massa"||obj==="hipertrofia") t=`Ganho de massa muscular, com mais volume em ${t2}. Comendo um pouco acima do que gasta, espere de 0,25 a 0,5 kg por semana na balança e as cargas subindo a cada ciclo.`;
+  else if(obj==="forca") t=`Mais força nos exercícios principais, com as cargas subindo a cada ciclo.`;
+  else t=`Corpo mais tonificado e mais condicionamento, com mais volume em ${t2}.`;
+  if(nv==="Avançado"||nv==="Intensa") t+=" É um treino pesado: durma de 7 a 9 horas e coma bem para recuperar.";
+  if(nv==="Iniciante"||nv==="Leve") t+=" O foco agora é técnica e constância; a carga sobe aos poucos.";
+  const meta=num(p.metaPeso); if(meta!=null){ const pesos=S.pesos||[], at=pesos.length?pesos[pesos.length-1].kg:num(p.peso); if(at!=null && Math.abs(at-meta)>=0.3) t+=` Meta: ${fmtKg(meta)} kg (faltam ${fmtKg(Math.round(Math.abs(at-meta)*10)/10)} kg).`; }
+  return t;
+}
+function meuTreinoHTML(){
+  const p=S.perfil; if(!p) return ""; const fs=planoBase(); if(!fs.length) return "";
+  const nome=String(p.nome||"").trim().split(" ")[0]||"Meu", of=planoOficial(), vol=volumeSemana(), dias=diasSemana();
+  const plano=of?`Treino do ${esc(of.nome)} · ${esc(nivelPlano())}`:fs.some(f=>f.perso)?`Treino personalizado · intensidade ${esc(nivelPlano().toLowerCase())}`:`Meu plano · ${esc(nivelPlano())}`;
+  return `<div class="panel meu-treino"><span class="eyebrow">Treino ${esc(nome)}</span><b class="meta-big">${plano}</b><span class="presc">${dias.length} treinos por semana · ${fs.length} fichas · ${vol.tot} séries na semana</span>
+    <div class="vol">${vol.lista.slice(0,4).map(x=>`<div class="vol-l"><span>${esc(x.g)}</span><div class="mini-prog"><i style="width:${Math.min(100,x.pct*2.2)}%"></i></div><small>${x.pct}%</small></div>`).join("")}</div>
+    <p class="note" style="margin:0"><b style="color:var(--chalk)">O que ele vai fazer em você:</b> ${esc(efeitoTexto())}</p></div>`;
+}
+
+/* ---------- Troca de aparelho só no treino de hoje ---------- */
+function comTrocas(f){ const a=S.atual; if(!f||!a||a.fichaId!==f.id||!a.trocas||!Object.keys(a.trocas).length) return f;
+  return {...f, exercicios:(f.exercicios||[]).map((e,i)=>a.trocas[i]?{...e, nome:a.trocas[i], anim:(LIB.find(x=>x[0]===a.trocas[i])||[])[2]||"", obs:"Troca de hoje: o aparelho estava ocupado"}:e)}; }
+function alternativas(nome,f){
+  const g=grupoEx(nome), p=S.perfil||{}, lim=p.limites||[], lvl=Math.max(0,NIVEIS.indexOf(nivelPlano())), it=LIB.find(x=>x[0]===nome), usados=new Set((f&&f.exercicios||[]).map(e=>e.nome));
+  if(!g) return [];
+  const c=LIB.filter(x=>x[1]===g && x[0]!==nome && !usados.has(x[0]) && x[4]<=Math.max(lvl,1) && !lim.some(l=>EVITAR[l]&&EVITAR[l].test(x[0])));
+  const maq=/máquina|leg|cadeira|mesa|cross|cabo|polia|smith|hack|pêndulo|puxada|remada baixa|voador/i.test(nome);
+  c.sort((a,b)=>((it&&b[2]===it[2])-(it&&a[2]===it[2])) || ((maq? !/máquina|cadeira|mesa|smith|hack/i.test(b[0]) : 0) - (maq? !/máquina|cadeira|mesa|smith|hack/i.test(a[0]) : 0)));
+  return c.slice(0,3).map(x=>x[0]);
+}
+
+/* ---------- Assistente (IA) ---------- */
+const nrm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const chatLista=()=>LS.get("brabus.chat",[])||[];
+function chatAdd(m){ const l=[...chatLista(), {...m, em:Date.now()}].slice(-40); LS.set("brabus.chat",l); }
+function fichaContexto(){ if(S.atual) return fichaById(S.atual.fichaId); const hi=hojeInfo(); if(hi.f) return fichaById(hi.f.id); if(hi.prox) return fichaById(hi.prox.f.id); return S.fichaId?fichaById(S.fichaId):null; }
+function cargaTxt(f,e){ const g=cargaSugerida(e.nome,+e.series||3,e.reps,f.perso?intensDe(f):CAT_PRONTO.includes(f.nivel)?nivelDe(f):null); return g?` · ${fmtKg(g.kg)} kg${g.un||""}`:""; }
+function txtFicha(f){ return (f.exercicios||[]).map((e,i)=>`${i+1}. ${e.nome}: ${e.series} × ${e.reps}${cargaTxt(f,e)}`).join("\n"); }
+const AREAS=[[/glut|bumbum|bunda/,"gluteo"],[/perna|coxa|quadr|culote/,"quad"],[/posterior/,"post"],[/tricep|braco|tchauzinho/,"triceps"],[/bicep/,"biceps"],[/barriga|abdom|abdominal|cintura|flanco|pochete/,"core"],[/costa|postura|dorsal/,"costas"],[/peito|peitoral/,"peito"],[/ombro|deltoide/,"ombro"],[/panturrilha/,"panturrilha"]];
+function treinoFocado(txt){
+  const t=nrm(txt), p=S.perfil||{}, lim=p.limites||[];
+  let areas=[...new Set(AREAS.filter(([re])=>re.test(t)).map(x=>x[1]))];
+  const mapInc={barriga:"core",cintura:"core",gluteos:"gluteo",coxas:"quad",bracos:"triceps",costas:"costas",peito:"peito"};
+  if(!areas.length) areas=[...new Set((p.incomoda||[]).map(x=>mapInc[x]).filter(Boolean))];
+  if(!areas.length) areas=["quad","costas","peito","gluteo"];
+  const emag=/emagre|secar|perder|queima|gordura|definir|definic/.test(t), massa=/massa|hipertrof|crescer|volume/.test(t);
+  const corpo=emag?"magro":massa?"massa":corpoDe(p), lvl=Math.max(0,NIVEIS.indexOf((S.perfil&&S.perfil.nivel)||"Iniciante"));
+  const plan=[]; areas.slice(0,4).forEach(g=>plan.push([g, areas.length<=2?3:2])); if(g0(areas)) plan.push(["quad",1]);
+  if(!areas.includes("core") && emag) plan.push(["core",1]);
+  if(areas.includes("quad") && !areas.includes("gluteo") && plan.length<5) plan.push(["gluteo",1]);
+  if(areas.includes("gluteo") && !areas.includes("quad")) plan.splice(1,0,["quad",1]);
+  const usados=new Set(), exs=[];
+  plan.forEach(([g,c])=>{ const pool=(ORDEM_G[g]||[]).map(nm=>LIB.find(e=>e[0]===nm)).filter(e=>e&&e[4]<=lvl&&!lim.some(l=>EVITAR[l].test(e[0])));
+    for(const e of pool){ if(c<=0) break; if(usados.has(e[0])) continue; usados.add(e[0]); exs.push(presPerso(e,corpo,lvl,g,lim)); c--; } });
+  const nomes=areas.slice(0,4).map(g=>({gluteo:"glúteos",quad:"pernas",post:"posterior",triceps:"braços",biceps:"bíceps",core:"abdômen",costas:"costas",peito:"peito",ombro:"ombros",panturrilha:"panturrilha"}[g]));
+  return {id:"dyn", nome:`Treino da IA · ${nomes.join(", ")}`, letra:"IA", nivel:"Treino da IA", foco:`${emag?"Emagrecimento":massa?"Ganho de massa":"Foco"} · ${nomes.join(", ")}`,
+    orientacao:`Montado pelo assistente${emag?" para emagrecimento: descanso curto e 20 a 25 minutos de cardio no fim":massa?" para ganho de massa: suba a carga quando fechar as repetições":""}. Aqueça 5 a 10 minutos antes.`,
+    exercicios:exs.slice(0,8), focoKey:"corpo", intens:"normal", criadoEm:new Date().toISOString()};
+}
+function g0(a){ return a.length===1 && a[0]==="core"; }
+function respostaLocal(txt){
+  const t=nrm(txt), p=S.perfil;
+  if(!p) return {t:"Preencha seu perfil primeiro. Com ele eu sei seu treino, suas cargas e sua alimentação.", a:[{l:"Preencher perfil", act:"perfilIr"}]};
+  // trocar aparelho
+  if(/troca|ocupad|substitu|nao tem|sem o aparelho|outro exercicio/.test(t)){
+    const f=fichaContexto(); if(!f) return {t:"Você ainda não tem um treino para hoje. Monte seu plano primeiro."};
+    const pal=w=>w.length>3&&!["com","para","sentado","sentada","maquina"].includes(w);
+    let best=null, sc=0; (f.exercicios||[]).forEach((e,i)=>{ const s=nrm(e.nome).split(/[^a-z0-9]+/).filter(pal).filter(w=>t.includes(w)).length; if(s>sc){ sc=s; best={e,i}; } });
+    if(!best) return {t:`Qual aparelho está ocupado no ${f.nome}?`, a:(f.exercicios||[]).map(e=>({l:e.nome, act:"chatEnviar", v:`Trocar ${e.nome}, está ocupado`}))};
+    const alt=alternativas(best.e.nome,f);
+    if(!alt.length) return {t:`Não encontrei uma boa troca para ${best.e.nome}. Faça os outros exercícios e volte a ele quando liberar.`};
+    return {t:`${best.e.nome} ocupado? Estas trocas trabalham o mesmo músculo:`, a:alt.flatMap(nm=>[{l:`${nm} · só hoje`, act:"chatTroca", f:f.id, i:best.i, v:nm, modo:"hoje"}]).concat([{l:`Trocar de vez na ficha por ${alt[0]}`, act:"chatTroca", f:f.id, i:best.i, v:alt[0], modo:"sempre"}])};
+  }
+  // gerar treino focado
+  if(/(monta|gera|cria|quero|faz|faca|me de|sugere|sugira).*(treino)|treino .*(focad|emagre|para |pra |de )/.test(t) && !/hoje|amanha/.test(t)){
+    const tr=treinoFocado(txt); return {t:`Montei um treino com ${tr.exercicios.length} exercícios:\n${txtFicha(tr)}\n\n${tr.orientacao}`, treino:tr, a:[{l:"Abrir este treino", act:"chatTreino"}]};
+  }
+  // treino de hoje / amanhã
+  if(/treino|treinar|treino de hoje|o que (eu )?(faco|treino)/.test(t) && /hoje|agora|dia|amanha|qual/.test(t)){
+    const amanha=/amanha/.test(t), hi=hojeInfo(), ag=agendaSemana(), d=(new Date().getDay()+(amanha?1:0))%7, f=fichaRaw(ag[d]);
+    if(amanha) return f?{t:`Amanhã (${DOWL[d]}) é ${f.nome}: ${f.foco||""}.\n${txtFicha(fichaById(f.id))}`, a:[{l:`Abrir ${f.nome}`, act:"abrir", id:f.id}]}:{t:`Amanhã (${DOWL[d]}) é dia de descanso.`};
+    if(hi.tipo==="feito") return {t:`Hoje você já fez o ${hi.f.nome}. ${hi.prox?`O próximo é o ${hi.prox.f.nome} ${quandoProx(hi.prox)}.`:""}`};
+    if(hi.tipo==="descanso") return {t:`Hoje é dia de descanso. ${hi.prox?`O próximo é o ${hi.prox.f.nome} ${quandoProx(hi.prox)}.`:""}`, a:hi.prox?[{l:`Adiantar ${hi.prox.f.nome}`, act:"abrir", id:hi.prox.f.id}]:[]};
+    if(hi.f){ const fa=fichaById(hi.f.id); return {t:`Hoje é ${fa.nome}: ${fa.foco||""}, cerca de ${duracao(fa)} min.\n${txtFicha(fa)}`, a:[{l:"Começar treino", act:"abrir", id:fa.id}]}; }
+    return {t:"Você ainda não tem um plano. Quer que eu monte?", a:[{l:"Montar meu plano", act:"plano"}]};
+  }
+  // refeições
+  const REF=[[/cafe/,"Café"],[/almoco|almocar/,"Almoço"],[/janta|jantar/,"Jantar"],[/lanche/,"Lanche"],[/pre.?treino|antes do treino/,"Pré-treino"],[/pos.?treino|depois do treino/,"Pós-treino"],[/ceia/,"Ceia"]];
+  const rf=REF.find(([re])=>re.test(t));
+  if(rf || /comer|comida|refeic|dieta|cardapio/.test(t)){
+    const M=metasDia(p); if(!M) return {t:"Complete peso, altura, idade e sexo no perfil para eu montar sua alimentação."};
+    const pl=planoDia(p,M), hs=HORAS[p.horario]||HORAS.noite;
+    const alvo=rf?pl.map((m,i)=>({m,i})).filter(({m})=>m.nome.startsWith(rf[1])||m.nome.includes(rf[1]))[0]:null;
+    if(alvo){ const m=alvo.m; return {t:`${m.nome} (${hs[alvo.i]}) · ${Math.round(m.r.tot.kcal)} kcal, ${Math.round(m.r.tot.P)} g de proteína:\n${m.r.itens.map(x=>"• "+txtItem(x)).join("\n")}${m.tipo==="refeicao"?"\n• Salada e legumes à vontade":""}\n\nOutras opções: ${m.opts.filter((o,j)=>j!==m.o).map(o=>o.t).join(" ou ")}.`, a:[{l:"Ver na Nutrição", act:"nav", v:"nutricao"}]}; }
+    return {t:`Seu dia: ${M.kcal.toLocaleString("pt-BR")} kcal, ${M.P} g de proteína, ${M.C} g de carboidrato, ${M.G} g de gordura e ${String(M.agua).replace(".",",")} L de água.\n${pl.map((m,i)=>`• ${hs[i]} ${m.nome}: ${m.opts[m.o].t}`).join("\n")}`, a:[{l:"Ver na Nutrição", act:"nav", v:"nutricao"}]};
+  }
+  // resumo / evolução
+  if(/resumo|semana|evolu|progresso|como (estou|to|ta)|ciclo|meta/.test(t)){
+    const r=resumoSemana(semanaKey(Date.now())), I=cicloInfo();
+    let s=`Esta semana: ${r.n} de ${r.meta} treinos, ${r.min+r.cd.min} min de atividade.`;
+    if(r.subidas.length) s+=` A carga que mais subiu foi ${r.subidas[0].n} (${fmtKg(r.subidas[0].de)} → ${fmtKg(r.subidas[0].para)} kg).`;
+    if(I) s+=`\nCiclo de evolução: dia ${I.dia} de ${CICLO_DIAS}, ${I.metas} de ${I.total} metas de carga. ${I.ritmo}`;
+    if(I&&I.acao) s+=`\n${I.acao.t}`;
+    s+=`\nPara agora: ${r.foco.join(" ")}`;
+    return {t:s, a:[{l:"Ver Evolução", act:"verCiclo"}]};
+  }
+  // carga de um exercício
+  if(/carga|quanto (de )?(peso|kg)|quantos kg/.test(t)){
+    const f=fichaContexto(); const e=f&&(f.exercicios||[]).find(x=>nrm(x.nome).split(/\s+/).filter(w=>w.length>3).some(w=>t.includes(w)));
+    if(e) return {t:`${e.nome}: ${e.series} × ${e.reps}${cargaTxt(f,e)}. ${(cargaSugerida(e.nome,+e.series||3,e.reps,f.perso?intensDe(f):CAT_PRONTO.includes(f.nivel)?nivelDe(f):null)||{}).motivo||""}`};
+  }
+  // meu treino / efeito
+  if(/meu treino|o que (ele|o treino) (faz|vai)|foco do (meu )?treino|resultado/.test(t)) return {t:`${efeitoTexto()}\nVolume da semana: ${volumeSemana().lista.slice(0,4).map(x=>`${x.g} ${x.pct}%`).join(", ")}.`};
+  return null;
+}
+const AJUDA="Posso te ajudar com:\n• Qual o meu treino de hoje (ou de amanhã)\n• Meu almoço, jantar ou pré-treino de hoje\n• Trocar um aparelho que está ocupado\n• Montar um treino focado, ex.: \"treino para emagrecer focado em glúteos e barriga\"\n• Resumo da semana e do ciclo de evolução\n• Quanto de carga usar em um exercício";
+function ctxIA(){
+  const p=S.perfil||{}, ag=agendaSemana(), M=p.peso?metasDia(p):null, f=fichaContexto(), r=resumoSemana(semanaKey(Date.now())), I=cicloInfo();
+  const resF=x=>x&&{nome:x.nome, foco:x.foco, exercicios:(x.exercicios||[]).map(e=>{ const g=cargaSugerida(e.nome,+e.series||3,e.reps,x.perso?intensDe(x):CAT_PRONTO.includes(x.nivel)?nivelDe(x):null); return {nome:e.nome, series:e.series, reps:e.reps, descanso:e.descanso, carga_sugerida:g?g.kg+(g.un||""):null}; })};
+  return {hoje:new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long"}),
+    usuario:{nome:p.nome, sexo:p.sexo, idade:p.idade, peso:p.peso, altura:p.altura, objetivo:p.objetivo, corpo_desejado:p.corpo&&CORPO[p.corpo], incomoda:(p.incomoda||[]).map(x=>INCOMODA[x]), limitacoes:(p.limites||[]).map(x=>LIMITES[x]), nivel:p.nivel, meta_peso:p.metaPeso},
+    plano:{nome:(planoOficial()||{}).nome||"personalizado", nivel_ou_intensidade:nivelPlano(), agenda:Object.fromEntries(ORD_SEM.map(d=>[DOWL[d], fichaRaw(ag[d])?fichaRaw(ag[d]).nome:"descanso"]))},
+    treino_de_hoje_ou_proximo:resF(f), fichas:planoBase().map(x=>resF(fichaById(x.id))),
+    semana:{treinos:r.n, meta:r.meta, cardio_min:r.cd.min, subidas:r.subidas.slice(0,3)}, ciclo:I&&{dia:I.dia, total_dias:CICLO_DIAS, metas_batidas:I.metas, metas:I.total, ritmo:I.ritmo},
+    nutricao:M&&{metas:M, refeicoes:planoDia(p,M).map((m,i)=>({nome:m.nome, hora:(HORAS[p.horario]||HORAS.noite)[i], opcao:m.opts[m.o].t, itens:m.r.itens.map(txtItem)}))},
+    ultimos_treinos:S.sessoes.slice(0,5).map(s=>({ficha:s.fichaNome, data:s.fim.slice(0,10), exercicios:(s.exs||[]).map(e=>`${e.nome} ${e.sets.filter(x=>x.feito).map(x=>(x.carga??"")+"x"+(x.reps??"")).join(" ")}`)}))};
+}
+async function perguntarClaude(txt){
+  const key=LS.get("brabus.iaKey",""); if(!key) return null;
+  const sys=`Você é o assistente do FamilyFlow, app pessoal de treino e nutrição. Responda em português do Brasil, curto e prático, como um personal trainer e nutricionista experiente. Use os dados do usuário abaixo. Não dê diagnóstico médico; respeite as limitações.
+Quando o usuário pedir um treino novo, além do texto inclua um bloco:
+\`\`\`treino
+{"nome":"...","foco":"...","orientacao":"...","exercicios":[{"nome":"...","series":3,"reps":"10-12","descanso":"60s","obs":""}]}
+\`\`\`
+Quando sugerir trocar um exercício do treino de hoje, inclua um bloco:
+\`\`\`troca
+{"de":"nome exato do exercício atual","para":"nome do novo exercício"}
+\`\`\`
+Dados do usuário (JSON): ${JSON.stringify(ctxIA())}`;
+  const hist=chatLista().slice(-12).map(m=>({role:m.r==="u"?"user":"assistant", content:m.t||""})).filter(m=>m.content);
+  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"x-api-key":key,"anthropic-version":"2023-06-01","content-type":"application/json","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:LS.get("brabus.iaModelo","claude-sonnet-5-5"), max_tokens:1200, system:sys, messages:[...hist.filter((m,i)=>!(i===hist.length-1&&m.role==="user"&&m.content===txt)), {role:"user", content:txt}]})});
+  const j=await res.json(); if(!res.ok) throw new Error((j.error&&j.error.message)||("erro "+res.status));
+  let out=(j.content||[]).filter(c=>c.type==="text").map(c=>c.text).join("\n"); const m={t:"", a:[]};
+  out=out.replace(/```treino\s*([\s\S]*?)```/,(x,js)=>{ try{ const o=JSON.parse(js); m.treino={id:"dyn", letra:"IA", nivel:"Treino da IA", focoKey:"corpo", intens:"normal", criadoEm:new Date().toISOString(), nome:o.nome||"Treino da IA", foco:o.foco||"", orientacao:o.orientacao||"", exercicios:(o.exercicios||[]).map(e=>({nome:String(e.nome), series:Math.max(1,parseInt(e.series)||3), reps:String(e.reps||"10-12"), descanso:String(e.descanso||"60s"), obs:String(e.obs||""), anim:""}))}; m.a.push({l:"Abrir este treino", act:"chatTreino"}); }catch(e){} return ""; });
+  out=out.replace(/```troca\s*([\s\S]*?)```/,(x,js)=>{ try{ const o=JSON.parse(js), f=fichaContexto(), i=f?(f.exercicios||[]).findIndex(e=>nrm(e.nome)===nrm(o.de)):-1; if(i>=0){ m.a.push({l:`${o.para} · só hoje`, act:"chatTroca", f:f.id, i, v:o.para, modo:"hoje"},{l:"Trocar de vez na ficha", act:"chatTroca", f:f.id, i, v:o.para, modo:"sempre"}); } }catch(e){} return ""; });
+  m.t=out.trim(); return m;
+}
+async function chatEnviar(txt){
+  txt=String(txt||"").trim(); if(!txt) return; chatAdd({r:"u", t:txt}); S.chatTxt=""; S.chatBusy=true; render();
+  let resp=null;
+  const local=respostaLocal(txt);
+  if(LS.get("brabus.iaKey","")){ try{ resp=await perguntarClaude(txt); }catch(e){ resp={t:`Não consegui falar com o Claude (${e.message}). ${local?"Respondi por aqui mesmo:":""}`}; if(local){ chatAdd(resp); resp=local; } } }
+  if(!resp) resp=local||{t:AJUDA+(LS.get("brabus.iaKey","")?"":"\n\nPara perguntas livres, conecte o Claude em ⚙.")};
+  chatAdd({r:"a", ...resp}); S.chatBusy=false; render();
+}
+function chatHTML(){
+  const l=chatLista(), key=LS.get("brabus.iaKey","");
+  const sug=["Qual o meu treino de hoje?","Quero meu almoço de hoje","Trocar um aparelho ocupado","Treino para emagrecer focado em glúteos e barriga","Resumo da minha semana"];
+  const msg=(m,k)=>`<div class="cm ${m.r==="u"?"eu":"ia"}"><div class="bolha">${esc(m.t||"").replace(/\n/g,"<br>")}</div>${(m.a||[]).length?`<div class="cm-a">${m.a.map((a,j)=>`<button class="chip" data-act="chatAcao" data-m="${k}" data-j="${j}">${esc(a.l)}</button>`).join("")}</div>`:""}</div>`;
+  return `<div class="ov-bg" data-act="chatFechar"></div><div class="ov chat" role="dialog" aria-label="Assistente">
+    <div class="row" style="justify-content:space-between"><b class="ov-t">Assistente <span class="ia-tag">IA</span></b><div class="row" style="gap:14px"><button class="link" data-act="chatConfig" aria-label="Configurar">⚙</button><button class="link" data-act="chatFechar">Fechar</button></div></div>
+    ${S.chatConfig?`<div class="panel" style="gap:8px"><b>Conectar o Claude (opcional)</b><p class="note" style="margin:0">Sem conexão, o assistente responde aos pedidos do dia a dia direto no app, sem internet e sem custo. Com uma chave de API da Anthropic, ele também responde perguntas livres. A chave fica só neste celular e cada pergunta tem um custo pequeno na sua conta da Anthropic. Seus dados de treino e alimentação vão junto na pergunta.</p>
+      <div class="field"><label for="ia-key">Chave de API</label><input id="ia-key" data-ia="key" type="password" autocomplete="off" placeholder="sk-ant-..." value="${esc(S.iaKeyDraft??key)}"></div>
+      <div class="row"><button class="btn primary sm" data-act="iaSalvar">Salvar</button>${key?`<button class="btn ghost sm" data-act="iaRemover">Remover chave</button>`:""}<button class="btn ghost sm" data-act="chatLimpar">Limpar conversa</button></div></div>`:""}
+    <div class="cm-lista" id="cm-lista">${l.length?l.map(msg).join(""):`<div class="cm ia"><div class="bolha">Oi${S.perfil&&S.perfil.nome?", "+esc(S.perfil.nome.split(" ")[0]):""}! ${esc(AJUDA).replace(/\n/g,"<br>")}</div></div>`}${S.chatBusy?`<div class="cm ia"><div class="bolha">Pensando…</div></div>`:""}</div>
+    <div class="chips">${sug.map(s=>`<button class="chip" data-act="chatEnviar" data-v="${esc(s)}">${esc(s)}</button>`).join("")}</div>
+    <div class="cm-in"><input id="cm-txt" data-cm="txt" placeholder="Pergunte ou peça algo" value="${esc(S.chatTxt||"")}" enterkeyhint="send" autocomplete="off"><button class="btn primary sm" data-act="chatEnviarTxt" ${S.chatBusy?"disabled":""}>Enviar</button></div>
+    <small class="hint">${key?"Conectado ao Claude":"Assistente do app · conecte o Claude em ⚙ para perguntas livres"}</small></div>`;
+}
+async function chatAcao(a,mi){
+  const l=chatLista(), m=l[mi];
+  if(a.act==="chatEnviar") return chatEnviar(a.v);
+  if(a.act==="abrir"){ S.chatOpen=false; S.fichaId=a.id; S.editing=null; go("ficha"); return; }
+  if(a.act==="nav"){ S.chatOpen=false; go(a.v); return; }
+  if(a.act==="verCiclo"){ S.chatOpen=false; S.evoTab="resumo"; go("historico"); return; }
+  if(a.act==="perfilIr"){ S.chatOpen=false; S.editPerfil=true; S.pfDraft=null; go("perfil"); return; }
+  if(a.act==="plano"){ S.chatOpen=false; const n=await salvarPlanoPerso(); toast(`Treino montado: ${n} fichas`); go("treinos"); return; }
+  if(a.act==="chatTreino" && m && m.treino){ if(S.atual && S.atual.fichaId==="dyn"){ toast("Conclua ou descarte o treino dinâmico em andamento"); return; } S.dyn=clone(m.treino); saveDoc("dyn",S.dyn); S.chatOpen=false; S.fichaId="dyn"; go("ficha"); toast("Treino da IA aberto"); return; }
+  if(a.act==="chatTroca"){
+    const f=fichaById(a.f); if(!f) return;
+    if(a.modo==="hoje"){ if(S.atual && S.atual.fichaId!==f.id){ toast("Você tem outro treino aberto. Conclua ou descarte primeiro"); return; } ensureAtual(f); S.atual.trocas={...(S.atual.trocas||{}), [a.i]:a.v}; saveAtual(); S.chatOpen=false; S.fichaId=f.id; go("ficha"); toast(`Só hoje: ${a.v}`); return; }
+    const raw=S.fichas.find(x=>x.id===a.f), ex=f.exercicios[a.i], j=raw?(raw.exercicios||[]).findIndex(e=>e.nome===ex.nome):-1;
+    if(j<0){ toast("Edite a ficha para trocar este exercício"); return; }
+    const it=LIB.find(x=>x[0]===a.v), exs=raw.exercicios.map((e,k)=>k===j?{...e, nome:a.v, anim:it?it[2]:"", obs:""}:e), {id,...body}=raw;
+    await S.db.doc("fichas/"+id).set({...body, exercicios:exs}); chatAdd({r:"a", t:`Pronto: ${ex.nome} foi trocado por ${a.v} na ficha ${raw.nome}.`}); render(); return;
+  }
+}
+
+/* ---------- Lembretes: água, suplementos e treino ---------- */
+const LEMB_PADRAO={agua:true, creatina:true, whey:true, cafeina:false, treino:true};
+const lembCfg=()=>({...LEMB_PADRAO, ...(LS.get("brabus.lembretes",{})||{})});
+const AGUA_H=["08:00","10:00","12:00","14:00","16:00","18:00","20:00"];
+const hmMais=(hm,min)=>{ const t=(+hm.slice(0,2))*60+(+hm.slice(3))+min, h=((Math.floor(t/60)%24)+24)%24, m=((t%60)+60)%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`; };
+function lembretesLista(){
+  const p=S.perfil; if(!p) return [];
+  const c=lembCfg(), M=metasDia(p), ag=AGENDA[p.horario]||AGENDA.noite, hs=HORAS[p.horario]||HORAS.noite, dias=diasSemana(p), todos=[0,1,2,3,4,5,6];
+  const iPre=ag.findIndex(a=>a[1]==="pre"), iPos=ag.findIndex(a=>/pós/i.test(a[0])), iCafe=ag.findIndex(a=>a[1]==="cafe");
+  const L=[];
+  if(c.agua && M){ const tot=Math.ceil(M.agua*1000/250), base=Math.floor(tot/AGUA_H.length), extra=tot%AGUA_H.length;
+    AGUA_H.forEach((h,k)=>{ const copos=Math.max(1,base+(k<extra?1:0)), porSlot=copos*250; L.push({id:"agua-"+k, h, dias:todos, tipo:"agua", ml:porSlot, t:`Hora da água: beba ${copos} copo${copos>1?"s":""} (${porSlot} ml)`, d:`Meta do dia: ${String(M.agua).replace(".",",")} L. Marque no FamilyFlow, em Nutrição.`}); }); }
+  const creat=num(p.peso)>=80?5:num(p.peso)>=60?4:3;
+  if(c.creatina) L.push({id:"creatina", h:hs[iCafe>=0?iCafe:0], dias:todos, tipo:"sup", t:`Tome sua creatina (${creat} g)`, d:"Todo dia, inclusive nos dias de descanso, junto com o café da manhã."});
+  if(c.whey && iPos>=0) L.push({id:"whey", h:hs[iPos], dias, tipo:"sup", t:"Hora do whey: 1 dose (30 g) no pós-treino", d:"Se fizer a refeição pós-treino completa do plano, ela já cobre a proteína."});
+  if(c.cafeina && iPre>=0){ const caf=Math.min(300,Math.max(100,Math.round(num(p.peso)*3/10)*10)); L.push({id:"cafeina", h:hmMais(hs[iPre],15), dias, tipo:"sup", t:`Cafeína pré-treino: até ${caf} mg`, d:"30 a 45 minutos antes de treinar. Evite à noite se atrapalhar o sono."}); }
+  if(c.treino && iPre>=0) L.push({id:"treino", h:hmMais(hs[iPre],-30), dias, tipo:"treino", t:"Dia de treino: abra o FamilyFlow e veja o treino de hoje", d:"Coma a refeição pré-treino do plano."});
+  return L.sort((a,b)=>a.h.localeCompare(b.h));
+}
+function icsLembretes(){
+  const L=lembretesLista(), pad=n=>String(n).padStart(2,"0"), d=new Date(), ymd=`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`, stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  const BY=["SU","MO","TU","WE","TH","FR","SA"], esc2=s=>String(s).replace(/([,;\\])/g,"\\$1");
+  const ev=L.map(x=>["BEGIN:VEVENT",`UID:ff-${x.id}-${ymd}@familyflow`,`DTSTAMP:${stamp}`,`DTSTART:${ymd}T${x.h.replace(":","")}00`,"DURATION:PT5M",
+    x.dias.length===7?"RRULE:FREQ=DAILY":`RRULE:FREQ=WEEKLY;BYDAY=${x.dias.map(k=>BY[k]).join(",")}`,`SUMMARY:${esc2(x.t)}`,`DESCRIPTION:${esc2(x.d)}`,"TRANSP:TRANSPARENT",
+    "BEGIN:VALARM","ACTION:DISPLAY",`DESCRIPTION:${esc2(x.t)}`,"TRIGGER:PT0M","END:VALARM","END:VEVENT"].join("\r\n"));
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//FamilyFlow//Lembretes//PT","CALSCALE:GREGORIAN","X-WR-CALNAME:FamilyFlow",...ev,"END:VCALENDAR"].join("\r\n");
+}
+function lembretesHTML(){
+  if(!S.perfil) return "";
+  const c=lembCfg(), L=lembretesLista(), perm=("Notification" in window)?Notification.permission:"nao";
+  const op=[["agua","Água ao longo do dia"],["creatina","Creatina"],["whey","Whey no pós-treino"],["cafeina","Cafeína pré-treino"],["treino","Aviso de dia de treino"]];
+  return `<details class="panel compras" ${S.lembOpen?"open":""} data-lemb><summary><b>Lembretes</b><span class="presc">${L.length} por dia</span></summary><div class="stack" style="gap:10px;margin-top:8px">
+    <div class="chips wrap">${op.map(([k,l])=>`<button class="chip" data-act="lembTog" data-k="${k}" aria-pressed="${!!c[k]}">${l}</button>`).join("")}</div>
+    <ul class="ref-it">${L.map(x=>`<li><b>${x.h}</b> · ${esc(x.t)}${x.dias.length<7?` <span class="muted">(${x.dias.map(k=>DOW[k]).join(", ")})</span>`:""}</li>`).join("")||`<li class="muted">Nenhum lembrete ligado</li>`}</ul>
+    <button class="btn primary block" data-act="lembIcs">Adicionar ao calendário do celular</button>
+    <p class="note" style="margin:0">É o jeito de receber os avisos com o app fechado: o calendário do celular toca em cada horário. Se mudar a meta ou os dias de treino, apague o calendário "FamilyFlow" antigo e adicione de novo.</p>
+    ${perm==="default"?`<button class="btn ghost block" data-act="lembPerm">Avisar também com o app aberto</button>`:perm==="granted"?`<small class="hint">Com o app aberto, os avisos também aparecem como notificação.</small>`:""}</div></details>`;
+}
+function lembVistos(){ const v=LS.get("brabus.lembVistos",{})||{}; return v[hojeKey()]||[]; }
+function marcaVisto(id){ const v=LS.get("brabus.lembVistos",{})||{}, k=hojeKey(); LS.set("brabus.lembVistos",{[k]:[...new Set([...(v[k]||[]),id])]}); }
+async function lembTick(){
+  if(!S.perfil || document.visibilityState!=="visible") return;
+  const L=lembretesLista(), now=new Date(), dw=now.getDay(), mins=now.getHours()*60+now.getMinutes(), vistos=lembVistos(), reg=diaReg();
+  for(const x of L){
+    const m=(+x.h.slice(0,2))*60+(+x.h.slice(3)); if(!x.dias.includes(dw) || mins<m || mins>m+45 || vistos.includes(x.id)) continue;
+    marcaVisto(x.id);
+    if(x.tipo==="agua"){ const M=metasDia(S.perfil), meta=M?M.agua*1000:0, esperado=Math.round(meta*((AGUA_H.indexOf(x.h)+1)/AGUA_H.length)); if(reg.agua>=esperado) continue; }
+    if(x.tipo==="treino" && S.sessoes.some(s=>diaKey(s.fim)===hojeKey())) continue;
+    S.lembAtivo=x; render();
+    try{ if("Notification" in window && Notification.permission==="granted"){ const r=await navigator.serviceWorker?.getRegistration(); if(r) r.showNotification(x.t,{body:x.d, icon:"familyflow-icon-192.png", tag:x.id}); else new Notification(x.t,{body:x.d}); } }catch(e){}
+    break;
+  }
+}
+setInterval(lembTick,60e3); document.addEventListener("visibilitychange",()=>setTimeout(lembTick,800));
+function lembBanner(){ const x=S.lembAtivo; if(!x) return "";
+  return `<div class="lemb-b" role="status"><div style="min-width:0"><b>${esc(x.t)}</b><small>${esc(x.d)}</small></div><div class="row" style="flex-wrap:nowrap">${x.tipo==="agua"?`<button class="btn sm primary" data-act="lembAgua" data-v="${x.ml}">Bebi</button>`:""}<button class="btn sm ghost" data-act="lembOk">OK</button></div></div>`; }
+
 /* ---------- Fotos de progresso (ficam só neste aparelho, IndexedDB) ---------- */
 const POSES=[["frente","Frente"],["lado","Lado"],["costas","Costas"]];
 const FOTODB={
@@ -2179,7 +2460,7 @@ async function init(){
 }
 
 /* ---------- Helpers de treino ---------- */
-const fichaById = id => { const f = id==="dyn" ? S.dyn : ajustar(S.fichas.find(f=>f.id===id)); return f && semanaLeve() ? leveAdj(f) : f; };
+const fichaById = id => { let f = id==="dyn" ? S.dyn : ajustar(S.fichas.find(f=>f.id===id)); if(f && semanaLeve()) f=leveAdj(f); return comTrocas(f); };
 function getSets(i, n){
   const k=String(i); S.atual.sets[k] = S.atual.sets[k] || [];
   while(S.atual.sets[k].length < n) S.atual.sets[k].push({c:"", r:"", f:false});
@@ -2364,11 +2645,16 @@ function render(){
   const map={explorar:vExplorar, perfil:vPerfil, treinos:vTreinos, ficha:vFicha, dinamico:vDinamico, nutricao:vNutricao, alunos:vAlunos, historico:vHistorico, avisos:vAvisos};
   const active = document.activeElement && document.activeElement.id;
   app.innerHTML = (map[S.view]||vTreinos)();
+  if(S.lembAtivo) app.insertAdjacentHTML("afterbegin", lembBanner());
   $("#cta").innerHTML = ctaFicha();
   if(S.view==="ficha" && !S.editing) ANIM.thumbs(fichaById(S.fichaId));
   if(S.view==="historico") hidrataFotos();
   let ovl=document.getElementById("ovl"); if(!ovl){ ovl=document.createElement("div"); ovl.id="ovl"; document.body.appendChild(ovl); }
-  ovl.innerHTML = S.anl ? anilhasHTML() : S.cardioForm ? cardioHTML() : "";
+  ovl.innerHTML = S.chatOpen ? chatHTML() : S.anl ? anilhasHTML() : S.cardioForm ? cardioHTML() : "";
+  if(S.chatOpen){ const cl=document.getElementById("cm-lista"); if(cl) cl.scrollTop=cl.scrollHeight; }
+  let fab=document.getElementById("iaBtn"); if(!fab){ fab=document.createElement("button"); fab.id="iaBtn"; fab.className="ia-fab"; fab.dataset.act="chatAbrir"; fab.setAttribute("aria-label","Abrir assistente"); fab.innerHTML="<span>IA</span>"; document.body.appendChild(fab); }
+  fab.hidden = !S.perfil || S.chatOpen || !!S.anl || !!S.cardioForm || (S.onb && S.onb!=="done");
+  fab.classList.toggle("alto", !!$("#cta").innerHTML.trim());
   syncWake();
   const ma=$("#m-aluno"), mp=$("#m-prof"); if(ma){ ma.setAttribute("aria-pressed",String(!S.owner)); mp.setAttribute("aria-pressed",String(S.owner)); }
   const rs=$("#demo-reset"); if(rs && S.confirm!=="reset") rs.textContent="Reiniciar";
@@ -2403,6 +2689,20 @@ document.addEventListener("click", async ev=>{
   if(act==="nivelPronto"){
     if(S.view==="ficha" && S.atual && S.atual.fichaId===S.fichaId){ toast("Conclua ou descarte o treino em andamento para trocar o nível"); return; }
     S.nivelPronto=b.dataset.k; LS.set("brabus.nivelPronto",S.nivelPronto); render(); return; }
+  if(act==="lembTog"){ const c=lembCfg(); c[b.dataset.k]=!c[b.dataset.k]; LS.set("brabus.lembretes",c); S.lembOpen=true; render(); return; }
+  if(act==="lembIcs"){ try{ const blob=new Blob([icsLembretes()],{type:"text/calendar;charset=utf-8"}), a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="familyflow-lembretes.ics"; document.body.appendChild(a); a.click(); a.remove(); toast("Abra o arquivo e toque em Adicionar todos"); }catch(e){ toast("Não foi possível gerar o arquivo"); } return; }
+  if(act==="lembPerm"){ try{ await Notification.requestPermission(); }catch(e){} S.lembOpen=true; render(); return; }
+  if(act==="lembOk"){ S.lembAtivo=null; render(); return; }
+  if(act==="lembAgua"){ const x=diaReg(); x.agua=(x.agua||0)+(+b.dataset.v||250); const M=S.perfil&&metasDia(S.perfil), pl=M?planoDia(S.perfil,M):[]; x.protTot=Math.round((x.prot||0)+protRefs(x,pl)); setDiaReg(x); S.lembAtivo=null; toast("Água registrada"); render(); return; }
+  if(act==="chatAbrir"){ S.chatOpen=true; S.anl=null; S.cardioForm=null; render(); setTimeout(()=>{ const el=$("#cm-txt"); if(el && matchMedia("(pointer:fine)").matches) el.focus(); },60); return; }
+  if(act==="chatFechar"){ S.chatOpen=false; S.chatConfig=false; render(); return; }
+  if(act==="chatConfig"){ S.chatConfig=!S.chatConfig; S.iaKeyDraft=null; render(); return; }
+  if(act==="iaSalvar"){ const k=String(S.iaKeyDraft??LS.get("brabus.iaKey","")).trim(); if(k && !/^sk-ant-/.test(k)){ toast("A chave começa com sk-ant-"); return; } LS.set("brabus.iaKey",k); S.chatConfig=false; S.iaKeyDraft=null; toast(k?"Claude conectado":"Chave removida"); render(); return; }
+  if(act==="iaRemover"){ try{ localStorage.removeItem("brabus.iaKey"); }catch(e){} S.iaKeyDraft=null; toast("Chave removida"); render(); return; }
+  if(act==="chatLimpar"){ LS.set("brabus.chat",[]); S.chatConfig=false; render(); return; }
+  if(act==="chatEnviar"){ chatEnviar(b.dataset.v); return; }
+  if(act==="chatEnviarTxt"){ const el=$("#cm-txt"); chatEnviar(el?el.value:S.chatTxt); return; }
+  if(act==="chatAcao"){ const m=chatLista()[+b.dataset.m], a=m&&(m.a||[])[+b.dataset.j]; if(a) await chatAcao(a,+b.dataset.m); return; }
   if(act==="intensPlano"){ if(S.view==="ficha" && S.atual && S.atual.fichaId===S.fichaId){ toast("Conclua ou descarte o treino em andamento para trocar a intensidade"); return; } S.intensPlano=b.dataset.k; LS.set("brabus.intensPlano",S.intensPlano); render(); return; }
   if(act==="persoGerar"){ if(!S.perfil){ S.editPerfil=true; S.pfDraft=null; go("perfil"); return; } b.disabled=true; const n=await salvarPlanoPerso(); toast(`Treino novo montado: ${n} fichas`); render(); return; }
   if(act==="perfilEditar2"){ S.editPerfil=true; S.pfDraft=null; go("perfil"); return; }
@@ -2624,6 +2924,8 @@ document.addEventListener("input", ev=>{
     const i=+t.dataset.i, j=+t.dataset.j; getSets(i, Math.max(1,+f.exercicios[i].series||1))[j].r=t.value;
     saveAtual(); if(wasNew){ $("#cta").innerHTML=ctaFicha(); }
   }
+  else if(t.dataset.cm){ S.chatTxt=t.value; }
+  else if(t.dataset.ia){ S.iaKeyDraft=t.value; }
   else if(t.dataset.anl && S.anl){ S.anl[t.dataset.anl]=t.value; const r=$("#anl-res"); if(r) r.innerHTML=anilhasRes(); }
   else if(t.dataset.cd && S.cardioForm){ S.cardioForm[t.dataset.cd]=t.value; }
   else if(t.dataset.md && S.medForm){ S.medForm[t.dataset.md]=t.value; }
@@ -2640,7 +2942,7 @@ document.addEventListener("input", ev=>{
 });
 document.addEventListener("change", ev=>{ if(ev.target.id!=="bk-file" || !ev.target.files || !ev.target.files[0]) return;
   const r=new FileReader(); r.onload=()=>{ try{ const o=JSON.parse(r.result); if(o.app!=="treinos-brabus"||!o.dados) throw 0; Object.keys(localStorage).filter(k=>k.startsWith("brabus.")).forEach(k=>localStorage.removeItem(k)); Object.entries(o.dados).forEach(([k,v])=>localStorage.setItem(k,v)); toast("Backup restaurado"); setTimeout(()=>location.reload(),600); }catch(e){ toast("Esse arquivo não é um backup do app"); } }; r.readAsText(ev.target.files[0]); });
-document.addEventListener("keydown", ev=>{ if(ev.key==="Escape") ANIM.close(); });
+document.addEventListener("keydown", ev=>{ if(ev.key==="Escape") ANIM.close(); if(ev.key==="Enter" && ev.target && ev.target.id==="cm-txt" && !ev.isComposing){ ev.preventDefault(); chatEnviar(ev.target.value); } });
 document.addEventListener("change", ev=>{ const fp=ev.target.dataset.foto; if(fp && ev.target.files && ev.target.files[0]){ salvaFoto(fp, ev.target.files[0]); ev.target.value=""; return; } const fs=ev.target.dataset.fsel; if(fs){ S["foto"+fs]=ev.target.value; render(); return; } });
 document.addEventListener("change", ev=>{ if(ev.target.dataset.act==="evo"){ S.evoEx=ev.target.value; render(); } const lb=ev.target.dataset.lib; if(lb && S.libDraft){ if(lb==="ficha"){ const id=ev.target.value; S.libDraft.fichas = ev.target.checked ? [...new Set([...S.libDraft.fichas,id])] : S.libDraft.fichas.filter(x=>x!==id); } else if(lb!=="nota") S.libDraft[lb]=ev.target.checked; }
   const ls=ev.target.dataset.libsel; if(ls && S.libDraft){ S.libDraft[ls] = ls==="cicloDias" ? +ev.target.value : ev.target.value; }
